@@ -1,15 +1,38 @@
 import { useState } from 'react'
 import './login.css'
+import Dashboard from './Dashboard'
 
 function Login() {
   const [usn, setUsn] = useState('')
   const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    sessionStorage.getItem('isLoggedIn') === 'true'
+  )
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    console.log('USN:', usn)
-    console.log('Login form submitted')
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ usn, password })
+    })
+
+    const result = await response.text()
+
+    if (result === 'Login successful') {
+      sessionStorage.setItem('isLoggedIn','true')
+      setIsLoggedIn(true)
+    } else {
+      setMessage(result)
+    }
+  }
+
+  if (isLoggedIn) {
+    return <Dashboard />
   }
 
   return (
@@ -36,6 +59,7 @@ function Login() {
         />
 
         <button type="submit">Sign In</button>
+        <p>{message}</p>
       </form>
     </div>
   )
