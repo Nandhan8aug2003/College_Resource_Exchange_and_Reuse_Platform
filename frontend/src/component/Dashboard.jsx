@@ -1,8 +1,9 @@
-import './Dashboard.css' 
+import './Dashboard.css'
+
 function Dashboard() {
   return (
     <div className="dashboard">
-      {/* Top bar */}
+      {/* Header */}
       <header className="top-bar">
         <h2>Resource Exchange</h2>
 
@@ -14,16 +15,18 @@ function Dashboard() {
         <div className="profile">N</div>
       </header>
 
-      {/* Left menu */}
+      {/* Dashboard body */}
       <div className="dashboard-layout">
+        {/* Sidebar */}
         <aside className="sidebar">
           <button className="active">Dashboard</button>
           <button>Resources</button>
           <button>Requests</button>
         </aside>
 
-        {/* Main content */}
+        {/* Scrollable main content */}
         <main className="main-content">
+          {/* Add your dashboard content here */}
         </main>
       </div>
     </div>
