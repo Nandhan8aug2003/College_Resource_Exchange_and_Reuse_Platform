@@ -24,8 +24,6 @@ function Dashboard() {
 
         {/* Main content */}
         <main className="main-content">
-          <h1>Discover resources</h1>
-          <p>Find useful study materials shared by students.</p>
         </main>
       </div>
     </div>
