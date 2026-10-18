@@ -4,7 +4,7 @@ import com.backend.backend.dto.LoginRequest;
 import com.backend.backend.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
