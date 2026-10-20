@@ -1,6 +1,5 @@
 package com.backend.backend.controller;
 
-import com.backend.backend.dto.LoginRequest;
 import com.backend.backend.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 

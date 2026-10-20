@@ -1,8 +1,6 @@
 package com.backend.backend.service;
 
-import com.backend.backend.dto.LoginRequest;
-import com.backend.backend.entity.Student;
-import com.backend.backend.repository.StudentRepository;
+import com.backend.backend.entity.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +14,7 @@ public class AuthService {
 
     public String login(LoginRequest request) {
 
-        Student student =
+        User student =
                 studentRepository.findByUsn(request.getUsn());
 
         if (student == null) {
