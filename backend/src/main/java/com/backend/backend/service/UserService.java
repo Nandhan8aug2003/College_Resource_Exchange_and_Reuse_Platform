@@ -3,7 +3,6 @@ package com.backend.backend.service;
 import com.backend.backend.dto.UserRegistrationRequest;
 import com.backend.backend.entity.User;
 import com.backend.backend.repository.UserRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -11,14 +10,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User studentReg(UserRegistrationRequest userRegistrationRequest){
+    public User userReg(UserRegistrationRequest userRegistrationRequest){
         User user = new User();
         user.setFirstName(userRegistrationRequest.getFirstName());
         user.setLastName(userRegistrationRequest.getLastName());
