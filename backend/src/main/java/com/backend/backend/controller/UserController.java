@@ -21,4 +21,6 @@ public class UserController {
         userService.userReg(userRegistrationRequest);
         return "Registration submitted successfully. Awaiting admin approval.";
     }
+
+    public String 
 }
