@@ -34,6 +34,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String department;
+
+    @Column(nullable = false)
+    private String collegeIdCardPath;
+
     public Long getId() {
         return id;
     }
@@ -100,6 +106,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getCollegeIdCardPath() {
+        return collegeIdCardPath;
+    }
+
+    public void setCollegeIdCardPath(String collegeIdCardPath) {
+        this.collegeIdCardPath = collegeIdCardPath;
     }
 }
 

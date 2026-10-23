@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './Register.css'
 import { API_BASE_URL } from '../apiConfig'
@@ -51,7 +50,7 @@ function Register() {
       )
 
       const result = await response.text()
-      setMessage(response.ok ? result : 'Registration failed: ' + result)
+      setMessage(response.ok ? result : 'Registration failed try after sometime')
     } catch {
       setMessage('Unable to connect to the backend.')
     }

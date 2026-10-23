@@ -7,6 +7,15 @@ public class UserRegistrationRequest {
     private String collegeEmail;
     private String phoneNumber;
     private String password;
+    private String department;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     public String getFirstName() {
         return firstName;
