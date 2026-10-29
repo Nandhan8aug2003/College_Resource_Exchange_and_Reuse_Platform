@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import { API_BASE_URL } from "./config";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/students/register",
+        `${API_BASE_URL}/api/students/register`,
         {
           method: "POST",
           body: data,
