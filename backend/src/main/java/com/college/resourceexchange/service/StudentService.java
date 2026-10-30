@@ -1,5 +1,6 @@
 package com.college.resourceexchange.service;
 
+import com.college.resourceexchange.dto.StudentIdCardResponse;
 import com.college.resourceexchange.entity.Student;
 import com.college.resourceexchange.repository.StudentRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,12 +22,16 @@ public class StudentService{
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
+    //constructor injection
     StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder){
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
 
     }
 
+    //method may throw exception the calling method need to handle using try catch,
+    //saving files
+    //creating dir
     private String saveIdCard(MultipartFile file) throws IOException {
         Path uploadDirectory = Paths.get("uploads").toAbsolutePath().normalize();
 
@@ -42,16 +47,20 @@ public class StudentService{
         return filePath.toString();
     }
 
+    //checks the db for usn isPresent
     public boolean isUsnRegistered(String usn){
         return studentRepository.existsByUsn(usn);
     }
 
+    //checks the db for college email isPresent
     public boolean isCollegeEmailRegistered(String collegeEmail){
         return studentRepository.existsByCollegeEmail(collegeEmail);
     }
 
+    //controller calls this method for registration
     public String registerStudent(StudentRegistrationRequest request) {
 
+        //checks any field is empty
         if (request.getUsn() == null || request.getUsn().isBlank()
                 || request.getCollegeEmail() == null
                 || request.getCollegeEmail().isBlank()
@@ -70,6 +79,7 @@ public class StudentService{
             return "College email already registered";
         }
 
+        //file handling exception
         try {
             String idCardPath = saveIdCard(request.getCollegeIdCard());
 
@@ -81,6 +91,8 @@ public class StudentService{
             student.setPhoneNumber(request.getPhoneNumber());
             student.setDepartment(request.getDepartment());
             student.setCollegeIdCard(idCardPath);
+
+            //password hashing as bcry
             student.setPassword(passwordEncoder.encode(request.getPassword()));
 
             studentRepository.save(student);
@@ -95,6 +107,7 @@ public class StudentService{
     public List<PendingStudentResponse> getPendingStudents() {
         return studentRepository
                 .findByRegistrationStatus(RegistrationStatus.PENDING)
+                //creates data pipe line
                 .stream()
                 .map(student -> {
                     PendingStudentResponse response =
@@ -111,5 +124,21 @@ public class StudentService{
                     return response;
                 })
                 .toList();
+    }
+
+    //sends the image bytes and image type
+    public StudentIdCardResponse getStudentIdCard(Long studentId)
+            throws IOException {
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        Path imagePath = Paths.get(student.getCollegeIdCard());
+
+        StudentIdCardResponse response = new StudentIdCardResponse();
+        response.setImageData(Files.readAllBytes(imagePath));
+        response.setContentType(Files.probeContentType(imagePath));
+
+        return response;
     }
 }
