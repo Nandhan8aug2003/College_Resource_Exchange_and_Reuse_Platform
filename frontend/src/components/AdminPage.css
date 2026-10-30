@@ -1,253 +1,342 @@
+
+/* Page */
 .admin-page {
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     box-sizing: border-box;
-    padding: 20px 30px;
-    background-color: #f5f6fa;
+    padding: 28px 20px;
+    background: linear-gradient(135deg, #fafbfc, #f4f5fa);
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    color: #252b3a;
 }
 
 .admin-page h1 {
-    margin-bottom: 25px;
-    color: #222;
+    margin: 0 0 16px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #20283b;
 }
 
-/* Summary Cards */
+/* Summary cards */
 .summary-cards {
     display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 14px;
+    margin-bottom: 34px;
 }
 
 .summary-card {
     flex: 1;
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    min-height: 75px;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #e0e2e9;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(35, 43, 65, 0.12);
 }
 
 .summary-card h3 {
-    margin: 0 0 12px;
-    color: #555;
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #343a49;
 }
 
 .summary-card p {
     margin: 0;
-    font-size: 28px;
-    font-weight: bold;
-    color: #222;
+    font-size: 23px;
+    font-weight: 700;
+    color: #111827;
 }
 
-/* Main Layout */
-.admin-content {
+.summary-card span {
+    width: 28px;
+    height: 28px;
     display: flex;
-    gap: 25px;
-}
-
-/* Sidebar */
-.admin-sidebar {
-    width: 210px;
-    flex-shrink: 0;
-    padding: 20px 12px;
-    background-color: white;
+    justify-content: center;
+    align-items: center;
     border-radius: 8px;
-    height: fit-content;
+    font-size: 17px;
 }
 
-.admin-sidebar h3 {
-    padding-left: 10px;
-    margin-top: 0;
-    color: #333;
+.pending-card span {
+    color: #c88935;
+    background: #fff0dc;
 }
 
-.status-button {
-    display: block;
-    width: 100%;
-    padding: 13px 15px;
-    margin-bottom: 8px;
-    border: none;
-    border-radius: 6px;
-    background-color: white;
-    text-align: left;
-    font-size: 15px;
-    cursor: pointer;
-    color: #222;
+.approved-card span {
+    color: #42945b;
+    background: #d9f0df;
 }
 
-.status-button:hover {
-    color: white;
-    background-color: #2563eb;
+.approved-card p {
+    color: #72b586;
 }
 
-/* .status-button.active {
-    color: #222;
-} */
-
-/* Student Section */
-.student-section {
-    flex: 1;
-    min-width: 0;
+.rejected-card span {
+    color: #bd5866;
+    background: #f5dfe2;
 }
 
+/* Tabs and search */
 .student-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-bottom: 19px;
+    padding-bottom: 0;
 }
 
-.student-section-header h2 {
-    color: #333;
+.status-tabs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.admin-page .status-tab {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.admin-page .status-tab.active {
+    color: white;
+    background: #2563eb;
+    /* box-shadow: 0 2px 5px rgba(50, 60, 100, 0.2); */
 }
 
 .student-section-header input {
-    width: 300px;
-    padding: 11px 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
+    width: 200px;
+    height: 28px;
     box-sizing: border-box;
+    padding: 5px 12px;
+    border: 1px solid #dedfe7;
+    border-radius: 20px;
+    outline: none;
+    background: white;
+    font-size: 10px;
 }
 
-/* Student Cards */
+.student-section-header input:focus {
+    border-color: #6975a5;
+}
+
+/* Student list */
 .student-list {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
 }
 
 .student-card {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 24px;
-    padding: 24px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 22px;
+    background: white;
+    border: 1px solid #e0e2e9;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(35, 43, 65, 0.10);
 }
 
 .student-details {
     flex: 1;
 }
 
+.student-details h3 {
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
 .student-details p {
-    margin: 0 0 12px;
-    color: #333;
+    margin: 0 0 9px;
+    color: #555d6e;
+    font-size: 14px;
 }
 
 .student-id-card {
-    width: 250px;
-    max-height: 300px;
+    width: 220px;
+    max-height: 250px;
     object-fit: contain;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid #e1e3eb;
+    border-radius: 8px;
     cursor: pointer;
 }
 
+/* Empty state */
 .no-students {
-    padding: 30px;
+    min-height: 213px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+    background: #fff;
+    border: 1px solid #e0e2e9;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(35, 43, 65, 0.12);
     text-align: center;
-    color: #777;
-    background-color: white;
-    border-radius: 8px;
 }
 
-/* Image Overlay */
+.empty-icon {
+    margin-bottom: 9px;
+    font-size: 54px;
+    line-height: 1;
+}
+
+.no-students h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #303644;
+}
+
+.no-students p {
+    margin: 0;
+    color: #777d89;
+    font-size: 13px;
+}
+
+/* Image preview */
 .image-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
     padding: 20px;
+    background: rgba(20, 25, 40, 0.85);
 }
 
 .enlarged-image {
     max-width: 90%;
     max-height: 90vh;
     object-fit: contain;
-    background-color: white;
-    border-radius: 6px;
+    background: white;
+    border-radius: 8px;
 }
 
 .close-button {
     position: absolute;
     top: 20px;
     right: 30px;
-    background-color: white;
-    border: none;
-    border-radius: 4px;
     padding: 4px 12px;
+    border: none;
+    border-radius: 6px;
+    background: white;
     font-size: 30px;
     cursor: pointer;
 }
 
-/* Mobile Responsive */
+/* Mobile */
 @media (max-width: 768px) {
     .admin-page {
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
         padding: 20px 15px;
-    }
-
-    .admin-content {
-        flex-direction: column;
-    }
-
-    .admin-sidebar {
-        width: auto;
     }
 
     .summary-cards {
         flex-direction: column;
+        gap: 12px;
     }
 
     .student-section-header {
         flex-direction: column;
         align-items: stretch;
+        padding-bottom: 12px;
+    }
+
+    .status-tabs {
+        justify-content: space-between;
     }
 
     .student-section-header input {
         width: 100%;
+        height: 36px;
+        font-size: 12px;
     }
 
     .student-card {
         flex-direction: column;
+        align-items: stretch;
     }
 
     .student-id-card {
         width: 100%;
+        max-height: 300px;
     }
 }
-@media (max-width: 768px) {
-    html,
-    body,
-    #root {
-        width: 100%;
-        height: auto !important;
-        min-height: 100%;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-    }
 
-    .admin-page {
-        width: 95%;
-        height: auto !important;
-        min-height: 100vh;
-        overflow: visible !important;
-        box-sizing: border-box;
-    }
 
-    .admin-content,
-    .student-section,
-    .student-list {
-        height: auto !important;
-        overflow: visible !important;
-    }
+
+/* Increase dashboard heading */
+.admin-page h1 {
+    font-size: 48px;
+    margin-bottom: 22px;
+}
+
+/* Increase summary cards */
+.summary-card {
+    min-height: 100px;
+    padding: 16px;
+}
+
+.summary-card h3 {
+    font-size: 18px;
+}
+
+.summary-card p {
+    font-size: 27px;
+}
+
+.summary-card span {
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
+}
+
+/* Increase spacing before tabs */
+.summary-cards {
+    margin-bottom: 38px;
+}
+
+/* Increase tab size */
+.admin-page .status-tab {
+    padding: 9px 17px;
+    font-size: 16px;
+}
+
+/* Increase search bar width and height */
+.student-section-header input {
+    width: 300px;
+    height: 40px;
+    padding: 8px 15px;
+    font-size: 13px;
+}
+
+/* Increase empty-state area */
+.no-students {
+    min-height: 240px;
+}
+
+.empty-icon {
+    font-size: 62px;
+}
+
+.no-students h3 {
+    font-size: 18px;
+}
+
+.no-students p {
+    font-size: 14px;
 }

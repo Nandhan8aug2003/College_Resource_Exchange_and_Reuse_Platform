@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from "react";
 import "./AdminPage.css";
-import {API_BASE_URL} from "../config";
+import { API_BASE_URL } from "../config";
 
 function AdminPage() {
     const [students, setStudents] = useState([]);
@@ -8,6 +9,7 @@ function AdminPage() {
     const [search, setSearch] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
 
+    // Fetch pending students
     useEffect(() => {
         fetch(`${API_BASE_URL}/api/students/admin/pending`)
             .then(response => {
@@ -20,140 +22,151 @@ function AdminPage() {
             .catch(error => console.error(error));
     }, []);
 
+    // Search students
     const filteredStudents = students.filter(student => {
-        const matchesStatus = selectedStatus === "PENDING";
+        const fullName =
+            `${student.firstName} ${student.lastName}`.toLowerCase();
 
-        const fullName = `${student.firstName} ${student.lastName}`;
+        const searchValue = search.toLowerCase();
 
         const matchesSearch =
-            fullName.toLowerCase().includes(search.toLowerCase()) ||
-            student.usn.toLowerCase().includes(search.toLowerCase()) ||
-            student.collegeEmail.toLowerCase().includes(search.toLowerCase());
+            fullName.includes(searchValue) ||
+            student.usn.toLowerCase().includes(searchValue) ||
+            student.collegeEmail.toLowerCase().includes(searchValue);
 
-        return matchesStatus && matchesSearch;
+        return matchesSearch;
     });
 
     const statusOptions = [
-        { label: "PENDING", value: "PENDING" },
-        { label: "APPROVED", value: "APPROVED" },
-        { label: "REJECTED", value: "REJECTED" }
+        { label: "Pending", value: "PENDING" },
+        { label: "Approved", value: "APPROVED" },
+        { label: "Rejected", value: "REJECTED" }
     ];
 
     return (
         <div className="admin-page">
 
+            {/* Dashboard Heading */}
             <h1>Admin Dashboard</h1>
 
             {/* Summary Cards */}
             <div className="summary-cards">
-                <div className="summary-card">
-                    <h3>Pending</h3>
-                    <p>{students.length}</p>
+
+                <div className="summary-card pending-card">
+                    <div>
+                        <h3>Pending</h3>
+                        <p>{students.length}</p>
+                    </div>
+                    <span>♙</span>
                 </div>
 
-                <div className="summary-card">
-                    <h3>Accepted</h3>
-                    <p>0</p>
+                <div className="summary-card approved-card">
+                    <div>
+                        <h3>Approved</h3>
+                        <p>0</p>
+                    </div>
+                    <span>✓</span>
                 </div>
 
-                <div className="summary-card">
-                    <h3>Rejected</h3>
-                    <p>0</p>
+                <div className="summary-card rejected-card">
+                    <div>
+                        <h3>Rejected</h3>
+                        <p>0</p>
+                    </div>
+                    <span>⊘</span>
                 </div>
+
             </div>
 
-            {/* Main Layout */}
-            <div className="admin-content">
+            {/* Status Tabs and Search */}
+            <div className="student-section-header">
 
-                {/* Sidebar */}
-                <aside className="admin-sidebar">
-                    <h3>Registrations</h3>
-
+                <div className="status-tabs">
                     {statusOptions.map(status => (
                         <button
                             key={status.value}
                             className={
                                 selectedStatus === status.value
-                                    ? "status-button active"
-                                    : "status-button"
+                                    ? "status-tab active"
+                                    : "status-tab"
                             }
                             onClick={() => setSelectedStatus(status.value)}
                         >
                             {status.label}
                         </button>
                     ))}
-                </aside>
+                </div>
 
-                {/* Student Section */}
-                <main className="student-section">
+                <input
+                    type="text"
+                    placeholder="Search by name, USN or email..."
+                    value={search}
+                    onChange={event => setSearch(event.target.value)}
+                />
 
-                    <div className="student-section-header">
-                        <h2>
-                            {statusOptions.find(
-                                status => status.value === selectedStatus
-                            ).label} Students
-                        </h2>
+            </div>
 
-                        <input
-                            type="text"
-                            placeholder="Search by name, USN or email..."
-                            value={search}
-                            onChange={event => setSearch(event.target.value)}
-                        />
+            {/* Student List */}
+            <div className="student-list">
+
+                {selectedStatus === "PENDING" &&
+                filteredStudents.length > 0 ? (
+
+                    filteredStudents.map(student => (
+                        <div
+                            className="student-card"
+                            key={student.studentId}
+                        >
+
+                            <div className="student-details">
+                                <h3>
+                                    {student.firstName} {student.lastName}
+                                </h3>
+
+                                <p>
+                                    <strong>USN:</strong> {student.usn}
+                                </p>
+
+                                <p>
+                                    <strong>Email:</strong> {student.collegeEmail}
+                                </p>
+
+                                <p>
+                                    <strong>Phone:</strong> {student.phoneNumber}
+                                </p>
+
+                                <p>
+                                    <strong>Department:</strong> {student.department}
+                                </p>
+                            </div>
+
+                            <img
+                                className="student-id-card"
+                                src={`${API_BASE_URL}/api/students/admin/${student.studentId}/id-card`}
+                                alt="College ID Card"
+                                onClick={event =>
+                                    setSelectedImage(event.currentTarget.src)
+                                }
+                            />
+
+                        </div>
+                    ))
+
+                ) : (
+
+                    <div className="no-students">
+                        <div className="empty-icon">📂</div>
+
+                        <h3>No students found.</h3>
+
+                        <p>
+                            There are currently no registration requests
+                            in this category.
+                        </p>
                     </div>
 
-                    <div className="student-list">
+                )}
 
-                        {filteredStudents.length > 0 ? (
-                            filteredStudents.map(student => (
-                                <div
-                                    className="student-card"
-                                    key={student.studentId}
-                                >
-                                    <div className="student-details">
-                                        <p>
-                                            <strong>Name:</strong>{" "}
-                                            {student.firstName} {student.lastName}
-                                        </p>
-
-                                        <p>
-                                            <strong>USN:</strong> {student.usn}
-                                        </p>
-
-                                        <p>
-                                            <strong>Email:</strong>{" "}
-                                            {student.collegeEmail}
-                                        </p>
-
-                                        <p>
-                                            <strong>Phone:</strong>{" "}
-                                            {student.phoneNumber}
-                                        </p>
-
-                                        <p>
-                                            <strong>Department:</strong>{" "}
-                                            {student.department}
-                                        </p>
-                                    </div>
-
-                                    <img
-                                        className="student-id-card"
-                                        src={`${API_BASE_URL}/api/students/admin/${student.studentId}/id-card`}
-                                        alt="College ID Card"
-                                        onClick={event =>
-                                            setSelectedImage(event.currentTarget.src)
-                                        }
-                                    />
-                                </div>
-                            ))
-                        ) : (
-                            <p className="no-students">
-                                No students found.
-                            </p>
-                        )}
-
-                    </div>
-                </main>
             </div>
 
             {/* Enlarged ID Card */}

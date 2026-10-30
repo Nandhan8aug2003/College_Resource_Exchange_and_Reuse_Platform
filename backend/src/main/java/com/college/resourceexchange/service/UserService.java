@@ -62,10 +62,15 @@ public class UserService {
             }
 
             if (student.get().getRegistrationStatus() == RegistrationStatus.APPROVED ){
-                loginResponse.setMessage("registration pending approval");
+                loginResponse.setMessage("Login successful");
                 loginResponse.setRoleType(RoleType.STUDENT);
             }
+        }else {
+            loginResponse.setMessage("Login successful");
+            loginResponse.setRoleType(RoleType.ADMIN);
         }
+        System.out.println("Message: " + loginResponse.getMessage());
+        System.out.println("Role: " + loginResponse.getRoleType());
         return loginResponse;
     }
 }

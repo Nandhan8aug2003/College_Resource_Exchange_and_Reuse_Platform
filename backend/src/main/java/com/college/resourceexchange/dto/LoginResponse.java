@@ -3,7 +3,7 @@ package com.college.resourceexchange.dto;
 import com.college.resourceexchange.entity.RoleType;
 
 public class LoginResponse {
-    private RoleType roleType;
+    private  RoleType roleType;
     private String message;
 
     public RoleType getRoleType() {

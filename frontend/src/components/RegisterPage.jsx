@@ -2,6 +2,7 @@
 //useState function helps component to remember the changing data
 import { useState } from "react";
 import "../components/RegisterPage.css";
+import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 
 function RegisterPage() {
@@ -94,10 +95,11 @@ function RegisterPage() {
                         required
                     />
                     <input name="password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-
                     <button type="submit">Register</button>
-
                     <p>{message}</p>
+                    <p>
+                        already have an account? <Link to="/login">Login here</Link>
+                    </p>
                 </form>
             </div>
         </div>
