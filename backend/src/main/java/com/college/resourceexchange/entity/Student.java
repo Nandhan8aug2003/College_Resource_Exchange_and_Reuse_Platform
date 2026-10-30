@@ -1,13 +1,6 @@
 package com.college.resourceexchange.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "students")
@@ -17,12 +10,14 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studentId;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false, unique = true)
-    private String usn;
     @Column(nullable = false, unique = true)
     private String collegeEmail;
     @Column(nullable = false)
@@ -31,8 +26,6 @@ public class Student {
     private String department;
     @Column(nullable = false)
     private String collegeIdCard;
-    @Column(nullable = false)
-    private String password;
 
     @Enumerated(EnumType.STRING)
     private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
@@ -62,14 +55,6 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getUsn() {
-        return usn;
-    }
-
-    public void setUsn(String usn) {
-        this.usn = usn;
     }
 
     public String getCollegeEmail() {
@@ -104,19 +89,19 @@ public class Student {
         this.collegeIdCard = collegeIdCard;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public RegistrationStatus getRegistrationStatus() {
         return registrationStatus;
     }
 
     public void setRegistrationStatus(RegistrationStatus registrationStatus) {
         this.registrationStatus = registrationStatus;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

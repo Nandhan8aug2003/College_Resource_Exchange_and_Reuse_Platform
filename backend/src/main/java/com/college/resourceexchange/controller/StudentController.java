@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import com.college.resourceexchange.dto.StudentRegistrationRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {

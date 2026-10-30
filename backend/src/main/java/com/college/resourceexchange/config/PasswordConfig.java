@@ -1,4 +1,4 @@
-package com.college.resourceexchange;
+package com.college.resourceexchange.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

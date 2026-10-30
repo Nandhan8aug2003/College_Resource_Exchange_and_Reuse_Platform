@@ -1,7 +1,11 @@
 package com.college.resourceexchange.service;
 
+import com.college.resourceexchange.entity.RoleType;
 import com.college.resourceexchange.entity.Student;
+import com.college.resourceexchange.entity.User;
 import com.college.resourceexchange.repository.StudentRepository;
+import com.college.resourceexchange.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.college.resourceexchange.dto.StudentRegistrationRequest;
@@ -20,11 +24,12 @@ public class StudentService{
 
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder){
+    StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, UserRepository userRepository){
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.userRepository = userRepository;
     }
 
     private String saveIdCard(MultipartFile file) throws IOException {
@@ -42,14 +47,15 @@ public class StudentService{
         return filePath.toString();
     }
 
-    public boolean isUsnRegistered(String usn){
-        return studentRepository.existsByUsn(usn);
+    public boolean isUsnRegistered(String usn) {
+        return userRepository.existsByLoginId(usn);
     }
 
-    public boolean isCollegeEmailRegistered(String collegeEmail){
+    public boolean isCollegeEmailRegistered(String collegeEmail) {
         return studentRepository.existsByCollegeEmail(collegeEmail);
     }
 
+    @Transactional
     public String registerStudent(StudentRegistrationRequest request) {
 
         if (request.getUsn() == null || request.getUsn().isBlank()
@@ -73,16 +79,20 @@ public class StudentService{
         try {
             String idCardPath = saveIdCard(request.getCollegeIdCard());
 
+            User user = new User();
+            user.setLoginId(request.getUsn());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(RoleType.STUDENT);
             Student student = new Student();
             student.setFirstName(request.getFirstName());
             student.setLastName(request.getLastName());
-            student.setUsn(request.getUsn());
             student.setCollegeEmail(request.getCollegeEmail());
             student.setPhoneNumber(request.getPhoneNumber());
             student.setDepartment(request.getDepartment());
             student.setCollegeIdCard(idCardPath);
-            student.setPassword(passwordEncoder.encode(request.getPassword()));
 
+            User savedUser = userRepository.save(user);
+            student.setUser(savedUser);
             studentRepository.save(student);
 
             return "Registration successful";
@@ -103,7 +113,6 @@ public class StudentService{
                     response.setStudentId(student.getStudentId());
                     response.setFirstName(student.getFirstName());
                     response.setLastName(student.getLastName());
-                    response.setUsn(student.getUsn());
                     response.setCollegeEmail(student.getCollegeEmail());
                     response.setPhoneNumber(student.getPhoneNumber());
                     response.setDepartment(student.getDepartment());
