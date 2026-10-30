@@ -11,6 +11,7 @@ public class StudentRegistrationRequest {
     private String phoneNumber;
     private String department;
     private String password;
+    //spring web interface used as data type of variable which holds the uploaded file
     private MultipartFile collegeIdCard;
 
     public String getFirstName() {
