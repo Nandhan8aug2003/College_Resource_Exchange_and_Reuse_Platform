@@ -1,14 +1,10 @@
-//named import
-//useState function helps component to remember the changing data
 import { useState } from "react";
-import "../components/RegisterPage.css";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
+import "./RegisterPage.css";
+import studentLogo from '../assets/logoofstudents.jpg';
 
 function RegisterPage() {
-    //array destructuring
-    //useState returns array with two values 
-    //react calls register component and exicutes useState function
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -16,37 +12,41 @@ function RegisterPage() {
         collegeEmail: "",
         phoneNumber: "",
         department: "",
-        collegeIdCard: "",
         password: "",
+        confirmPassword: "",
     });
+
     const [collegeIdCard, setCollegeIdCard] = useState(null);
     const [message, setMessage] = useState("");
 
-    //event js obj when any action happend in browser it create js obj
     function handleChange(event) {
-        //obj destructuring
         const { name, value } = event.target;
 
         setFormData({
-            //spread operator includes all existing fields
             ...formData,
-            //[ ] taking value from input name attribute
             [name]: value,
         });
     }
 
     async function handleSubmit(event) {
-        //to avoid page render
         event.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            setMessage("Passwords do not match.");
+            return;
+        }
+
+        if (!collegeIdCard) {
+            setMessage("Please upload your college ID card.");
+            return;
+        }
+
         setMessage("Registering...");
 
-        //browser built in FormData api
         const data = new FormData();
 
-        //built in js method 
-        //it can use .forEach obj like formData cannot 
         Object.entries(formData).forEach(([key, value]) => {
-            if (key !== "collegeIdCard") {
+            if (key !== "confirmPassword") {
                 data.append(key, value);
             }
         });
@@ -64,44 +64,178 @@ function RegisterPage() {
 
             const result = await response.text();
             setMessage(result);
+
         } catch (error) {
             setMessage("Could not connect to the server.");
         }
     }
-    return (
-        <div className="container">
-            <div>
-                <h2>Student Registration</h2>
 
-                {/* multipart/form-data as both text and file upload */}
-                <form onSubmit={handleSubmit}>
-                    <input name="firstName"
-                        placeholder="First Name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required />
-                    <input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
-                    <input name="usn" placeholder="USN" value={formData.usn} onChange={handleChange} required />
-                    <input name="collegeEmail" type="email" placeholder="College Email" value={formData.collegeEmail} onChange={handleChange} required />
-                    <input name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} required />
-                    <input name="department" placeholder="Department" value={formData.department} onChange={handleChange} required />
-                    <input
-                        name="collegeIdCard"
-                        type="file"
-                        accept="image/*"
-                        onChange={(event) =>
-                            setCollegeIdCard(event.target.files[0])
-                        }
-                        required
+    return (
+        <div className="register-page">
+
+            {/* Left Section */}
+            <div className="register-left">
+
+                <h2 className="register-brand">
+                    <span>♻</span> REUSEHUB
+                </h2>
+
+                <h1>
+                    Share what you have.
+                    <br />
+                    <span>Find what you need.</span>
+                </h1>
+
+                <ul className="register-features">
+                    <li>Calculators, lab kits, IoT & electronic parts</li>
+                    <li>Sell, donate or lend within your college</li>
+                    <li>Spend less, waste less</li>
+                </ul>
+
+                <div className="register-illustration">
+                    <img
+                        src={studentLogo}
+                        alt="Students sharing resources"
                     />
-                    <input name="password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-                    <button type="submit">Register</button>
-                    <p>{message}</p>
-                    <p>
-                        already have an account? <Link to="/login">Login here</Link>
-                    </p>
-                </form>
+                </div>
+
             </div>
+
+            {/* Right Section */}
+            <div className="register-right">
+
+                <div className="register-card">
+
+                    <h2>Student Registration</h2>
+
+                    <p className="register-subtitle">
+                        Create your student account to get started.
+                    </p>
+
+                    <form onSubmit={handleSubmit}>
+
+                        <div className="register-grid">
+
+                            <div className="register-field">
+                                <label>First Name</label>
+                                <input
+                                    name="firstName"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label>Last Name</label>
+                                <input
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label>USN</label>
+                                <input
+                                    name="usn"
+                                    value={formData.usn}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label>College Email</label>
+                                <input
+                                    name="collegeEmail"
+                                    type="email"
+                                    value={formData.collegeEmail}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label>Phone Number</label>
+                                <input
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label>Department</label>
+                                <input
+                                    name="department"
+                                    value={formData.department}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                        </div>
+
+                        {/* College ID Upload */}
+                        <label className="upload-box">
+
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(event) =>
+                                    setCollegeIdCard(event.target.files[0])
+                                }
+                                required
+                            />
+
+                            <span className="upload-icon">♧</span>
+
+                            <span className="upload-text">
+                                <strong>College ID Card Upload</strong>
+                                <small>
+                                    {collegeIdCard
+                                        ? collegeIdCard.name
+                                        : "Drag & drop or click to upload"}
+                                </small>
+                            </span>
+
+                        </label>
+
+                        {/* Password Fields */}
+                        <div className="register-grid">
+
+                            <div className="register-field">
+                                <label>Password</label>
+                                <input
+                                    name="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <button type="submit" className="register-button">
+                            Register
+                        </button>
+
+                        <p className="register-message">{message}</p>
+
+                    </form>
+
+                    <p className="login-link">
+                        Already registered?
+                        <Link to="/login"> Login</Link>
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
     );
 }

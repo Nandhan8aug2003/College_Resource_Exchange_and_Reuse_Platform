@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import "./AdminPage.css";
 import { API_BASE_URL } from "../config";
@@ -7,7 +6,7 @@ function AdminPage() {
     const [students, setStudents] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState("PENDING");
     const [search, setSearch] = useState("");
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedStudent, setSelectedStudent] = useState(null);
 
     // Fetch pending students
     useEffect(() => {
@@ -29,165 +28,307 @@ function AdminPage() {
 
         const searchValue = search.toLowerCase();
 
-        const matchesSearch =
+        return (
             fullName.includes(searchValue) ||
             student.usn.toLowerCase().includes(searchValue) ||
-            student.collegeEmail.toLowerCase().includes(searchValue);
-
-        return matchesSearch;
+            student.collegeEmail.toLowerCase().includes(searchValue)
+        );
     });
 
-    const statusOptions = [
-        { label: "Pending", value: "PENDING" },
-        { label: "Approved", value: "APPROVED" },
-        { label: "Rejected", value: "REJECTED" }
+    // Sidebar options
+    const menuItems = [
+        { label: "Dashboard", value: "DASHBOARD", icon: "▦", count: null },
+        { label: "Total Registered", value: "ALL", icon: "♙", count: 0 },
+        { label: "Pending", value: "PENDING", icon: "◷", count: students.length },
+        { label: "Approved", value: "APPROVED", icon: "✓", count: 0 },
+        { label: "Rejected", value: "REJECTED", icon: "⊗", count: 0 }
     ];
 
+    // Current table title
+    const getTableTitle = () => {
+        if (selectedStatus === "ALL") return "All Registered Students";
+        if (selectedStatus === "PENDING") return "Pending Students";
+        if (selectedStatus === "APPROVED") return "Approved Students";
+        if (selectedStatus === "REJECTED") return "Rejected Students";
+        return "Student Registrations";
+    };
+
     return (
-        <div className="admin-page">
+        <div className="admin-layout">
 
-            {/* Dashboard Heading */}
-            <h1>Admin Dashboard</h1>
+            {/* SIDEBAR */}
+            <aside className="admin-sidebar">
 
-            {/* Summary Cards */}
-            <div className="summary-cards">
-
-                <div className="summary-card pending-card">
-                    <div>
-                        <h3>Pending</h3>
-                        <p>{students.length}</p>
-                    </div>
-                    <span>♙</span>
+                <div className="admin-brand">
+                    <span className="brand-icon">♻</span>
+                    REUSEHUB
                 </div>
 
-                <div className="summary-card approved-card">
-                    <div>
-                        <h3>Approved</h3>
-                        <p>0</p>
-                    </div>
-                    <span>✓</span>
-                </div>
+                <p className="sidebar-heading">STUDENTS</p>
 
-                <div className="summary-card rejected-card">
-                    <div>
-                        <h3>Rejected</h3>
-                        <p>0</p>
-                    </div>
-                    <span>⊘</span>
-                </div>
-
-            </div>
-
-            {/* Status Tabs and Search */}
-            <div className="student-section-header">
-
-                <div className="status-tabs">
-                    {statusOptions.map(status => (
+                <nav className="sidebar-menu">
+                    {menuItems.map(item => (
                         <button
-                            key={status.value}
-                            className={
-                                selectedStatus === status.value
-                                    ? "status-tab active"
-                                    : "status-tab"
-                            }
-                            onClick={() => setSelectedStatus(status.value)}
+                            key={item.value}
+                            className={`sidebar-item ${
+                                selectedStatus === item.value ? "active" : ""
+                            }`}
+                            onClick={() => setSelectedStatus(item.value)}
                         >
-                            {status.label}
+                            {/* <span className="sidebar-icon">{item.icon}</span> */}
+
+                            {item.label}
+
+                            {item.count !== null && (
+                                <small>
+                                    {item.value === "PENDING"
+                                        ? students.length
+                                        : item.count}
+                                </small>
+                            )}
                         </button>
                     ))}
-                </div>
+                </nav>
 
-                <input
-                    type="text"
-                    placeholder="Search by name, USN or email..."
-                    value={search}
-                    onChange={event => setSearch(event.target.value)}
-                />
+                <button className="logout-button">
+                    <span>⇥</span>
+                    Logout
+                </button>
 
-            </div>
+            </aside>
 
-            {/* Student List */}
-            <div className="student-list">
+            {/* MAIN CONTENT */}
+            <main className="admin-main">
 
-                {selectedStatus === "PENDING" &&
-                filteredStudents.length > 0 ? (
-
-                    filteredStudents.map(student => (
-                        <div
-                            className="student-card"
-                            key={student.studentId}
-                        >
-
-                            <div className="student-details">
-                                <h3>
-                                    {student.firstName} {student.lastName}
-                                </h3>
-
-                                <p>
-                                    <strong>USN:</strong> {student.usn}
-                                </p>
-
-                                <p>
-                                    <strong>Email:</strong> {student.collegeEmail}
-                                </p>
-
-                                <p>
-                                    <strong>Phone:</strong> {student.phoneNumber}
-                                </p>
-
-                                <p>
-                                    <strong>Department:</strong> {student.department}
-                                </p>
-                            </div>
-
-                            <img
-                                className="student-id-card"
-                                src={`${API_BASE_URL}/api/students/admin/${student.studentId}/id-card`}
-                                alt="College ID Card"
-                                onClick={event =>
-                                    setSelectedImage(event.currentTarget.src)
-                                }
-                            />
-
-                        </div>
-                    ))
-
-                ) : (
-
-                    <div className="no-students">
-                        <div className="empty-icon">📂</div>
-
-                        <h3>No students found.</h3>
-
+                {/* HEADER */}
+                <header className="admin-header">
+                    <div>
+                        <h1>Admin Dashboard</h1>
                         <p>
-                            There are currently no registration requests
-                            in this category.
+                            Verify student identities and manage registrations.
                         </p>
                     </div>
 
-                )}
-
-            </div>
-
-            {/* Enlarged ID Card */}
-            {selectedImage && (
-                <div
-                    className="image-overlay"
-                    onClick={() => setSelectedImage(null)}
-                >
-                    <button
-                        className="close-button"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        &times;
-                    </button>
-
-                    <img
-                        src={selectedImage}
-                        alt="Enlarged College ID Card"
-                        className="enlarged-image"
-                        onClick={event => event.stopPropagation()}
+                    <input
+                        className="admin-search"
+                        type="text"
+                        placeholder="⌕  Search by name or USN"
+                        value={search}
+                        onChange={event => setSearch(event.target.value)}
                     />
+                </header>
+
+                {/* TABLE SECTION */}
+                <section className="student-section">
+
+                    <div className="table-heading">
+                        <h2>{getTableTitle()}</h2>
+                    </div>
+
+                    <div className="student-table-container">
+                        <table className="student-table">
+
+                            <thead>
+                                <tr>
+                                    <th>STUDENT</th>
+                                    <th>USN</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>REGISTERED</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {selectedStatus === "PENDING" &&
+                                filteredStudents.length > 0 ? (
+
+                                    filteredStudents.map(student => (
+                                        <tr key={student.studentId}>
+
+                                            <td>
+                                                <div className="table-student">
+                                                    <div className="student-avatar">
+                                                        {student.firstName[0]}
+                                                        {student.lastName[0]}
+                                                    </div>
+
+                                                    <div>
+                                                        <strong>
+                                                            {student.firstName}{" "}
+                                                            {student.lastName}
+                                                        </strong>
+
+                                                        <span>
+                                                            {student.collegeEmail}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>{student.usn}</td>
+
+                                            <td>{student.department}</td>
+
+                                            <td>
+                                                {student.createdAt
+                                                    ? new Date(student.createdAt)
+                                                        .toLocaleDateString("en-GB")
+                                                    : "—"}
+                                            </td>
+
+                                            <td>
+                                                <span className="status-badge pending">
+                                                    Pending
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <div className="table-actions">
+
+                                                    <button
+                                                        className="view-button"
+                                                        onClick={() =>
+                                                            setSelectedStudent(student)
+                                                        }
+                                                    >
+                                                        <span>◎</span>
+                                                        View
+                                                    </button>
+
+                                                    <button
+                                                        className="approve-button"
+                                                        disabled
+                                                        title="Approval functionality will be added later"
+                                                    >
+                                                        Approve
+                                                    </button>
+
+                                                    <button
+                                                        className="reject-button"
+                                                        disabled
+                                                        title="Rejection functionality will be added later"
+                                                    >
+                                                        Reject
+                                                    </button>
+
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    ))
+
+                                ) : (
+
+                                    <tr>
+                                        <td colSpan="6" className="empty-table">
+                                            No students found in this category.
+                                        </td>
+                                    </tr>
+
+                                )}
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </section>
+
+            </main>
+
+            {/* STUDENT DETAILS MODAL */}
+            {selectedStudent && (
+                <div
+                    className="modal-overlay"
+                    onClick={() => setSelectedStudent(null)}
+                >
+                    <div
+                        className="student-modal"
+                        onClick={event => event.stopPropagation()}
+                    >
+
+                        <button
+                            className="modal-close"
+                            onClick={() => setSelectedStudent(null)}
+                        >
+                            ×
+                        </button>
+
+                        <div className="modal-heading">
+                            <h2>
+                                {selectedStudent.firstName}{" "}
+                                {selectedStudent.lastName}
+                            </h2>
+
+                            <span className="status-badge pending">
+                                Pending
+                            </span>
+                        </div>
+
+                        <div className="modal-content">
+
+                            <div className="modal-details">
+
+                                <div>
+                                    <label>USN</label>
+                                    <p>{selectedStudent.usn}</p>
+                                </div>
+
+                                <div>
+                                    <label>College Email</label>
+                                    <p>{selectedStudent.collegeEmail}</p>
+                                </div>
+
+                                <div>
+                                    <label>Phone</label>
+                                    <p>{selectedStudent.phoneNumber}</p>
+                                </div>
+
+                                <div>
+                                    <label>Department</label>
+                                    <p>{selectedStudent.department}</p>
+                                </div>
+
+                                <div>
+                                    <label>Registered</label>
+                                    <p>
+                                        {selectedStudent.createdAt
+                                            ? new Date(selectedStudent.createdAt)
+                                                .toLocaleDateString("en-GB")
+                                            : "—"}
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <div className="modal-id-card">
+                                <label>College ID Card</label>
+
+                                <img
+                                    src={`${API_BASE_URL}/api/students/admin/${selectedStudent.studentId}/id-card`}
+                                    alt="College ID Card"
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="modal-actions">
+                            <button
+                                className="reject-button"
+                                disabled
+                            >
+                                Reject
+                            </button>
+
+                            <button
+                                className="approve-button"
+                                disabled
+                            >
+                                Approve
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             )}
 
