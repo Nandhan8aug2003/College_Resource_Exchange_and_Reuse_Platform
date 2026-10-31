@@ -77,11 +77,11 @@ function LoginPage() {
             <div className="login-right">
 
                 <div className="login-card">
-
                     <h2>Login</h2>
-                    <p className="login-subtitle">
+                     <p className="login-subtitle">
                         Welcome back to your campus exchange.
                     </p>
+                    
 
                     <form onSubmit={handleSubmit}>
 
