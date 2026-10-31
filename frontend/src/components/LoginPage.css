@@ -130,14 +130,14 @@
     justify-content: space-evenly;
 }
 
-.login-card h2 {
+.login-right h2 {
     font-size: 30px;
     color: #101e30;
     margin: 0 0 8px;
 }
 
-.login-subtitle {
-    color: #64748b;
+.login-right h2 span {
+   color: #0873e8;
     font-size: 14px;
     margin: 0 0 18px;
 }

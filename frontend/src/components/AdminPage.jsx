@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminPage.css";
 import { API_BASE_URL } from "../config";
 
@@ -7,6 +8,7 @@ function AdminPage() {
     const [selectedStatus, setSelectedStatus] = useState("PENDING");
     const [search, setSearch] = useState("");
     const [selectedStudent, setSelectedStudent] = useState(null);
+    const navigate = useNavigate();
 
     // Fetch pending students
     useEffect(() => {
@@ -34,6 +36,10 @@ function AdminPage() {
             student.collegeEmail.toLowerCase().includes(searchValue)
         );
     });
+
+    const handleLogout = () => {
+        navigate("/login");
+    };
 
     // Sidebar options
     const menuItems = [
@@ -90,7 +96,7 @@ function AdminPage() {
                     ))}
                 </nav>
 
-                <button className="logout-button">
+                <button className="logout-button" onClick={handleLogout}>
                     <span>⇥</span>
                     Logout
                 </button>
