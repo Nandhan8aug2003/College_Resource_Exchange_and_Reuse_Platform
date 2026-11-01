@@ -47,10 +47,6 @@ function LoginPage() {
             {/* Left Section */}
             <div className="login-left">
 
-                <h2 className="brand-name">
-                    <span>♻</span> REUSEHUB
-                </h2>
-
                 <h1>
                     Share what you have.
                     <br />
@@ -77,6 +73,10 @@ function LoginPage() {
             <div className="login-right">
 
                 <div className="login-card">
+                    
+                <h2 className="brand-name">
+                    <span>♻</span> REUSEHUB
+                </h2>
                    <h2>Welcome back!
                     <br />
                     <span>Please enter your credentials to access your account.</span>

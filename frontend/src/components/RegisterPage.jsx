@@ -75,11 +75,7 @@ function RegisterPage() {
 
             {/* Left Section */}
             <div className="register-left">
-
-                <h2 className="register-brand">
-                    <span>♻</span> REUSEHUB
-                </h2>
-
+                
                 <h1>
                     Share what you have.
                     <br />

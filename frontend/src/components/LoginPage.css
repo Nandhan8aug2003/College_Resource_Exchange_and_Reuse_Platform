@@ -26,20 +26,21 @@
     align-items: flex-start;
 }
 
-.brand-name {
-    font-size: 27px;
+.login-card .brand-name {
+    font-size: 55px;
     font-weight: 700;
     color: #102033;
     margin: 0 0 30px;
 }
 
-.brand-name span {
+.login-card .brand-name span {
+    font-size: 55px;
     color: #0873e8;
     margin-right: 8px;
 }
 
 .login-left h1 {
-    font-size: 48px;
+    font-size: 55px;
     line-height: 1.18;
     font-weight: 800;
     color: #101e30;
@@ -271,7 +272,10 @@
         font-size: 32px;
     }
 
-    .brand-name {
+    .login-card .brand-name {
+        font-size: 24px;
+    }
+    .login-card .brand-name span {
         font-size: 24px;
     }
 
@@ -281,5 +285,8 @@
 
     .login-illustration {
         height: 220px;
+    }
+    .login-right h2 span {
+        
     }
 }
