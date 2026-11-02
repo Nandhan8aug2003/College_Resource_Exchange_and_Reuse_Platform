@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
+    //check student collegeEmail
     boolean existsByCollegeEmail(String collegeEmail);
 
-    List<Student> findByRegistrationStatus(
-            RegistrationStatus registrationStatus);
-
     Optional<Student> findByUser_LoginId(String loginId);
+
+    //find student by registration status
+    List<Student> findByRegistrationStatus(RegistrationStatus registrationStatus);
 }

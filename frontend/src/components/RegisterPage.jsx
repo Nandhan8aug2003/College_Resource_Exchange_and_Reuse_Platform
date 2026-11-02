@@ -8,7 +8,7 @@ function RegisterPage() {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        usn: "",
+        loginId: "",
         collegeEmail: "",
         phoneNumber: "",
         department: "",
@@ -30,11 +30,6 @@ function RegisterPage() {
 
     async function handleSubmit(event) {
         event.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            setMessage("Passwords do not match.");
-            return;
-        }
 
         if (!collegeIdCard) {
             setMessage("Please upload your college ID card.");
@@ -135,8 +130,8 @@ function RegisterPage() {
                             <div className="register-field">
                                 <label>USN</label>
                                 <input
-                                    name="usn"
-                                    value={formData.usn}
+                                    name="loginId"
+                                    value={formData.loginId}
                                     onChange={handleChange}
                                     required
                                 />

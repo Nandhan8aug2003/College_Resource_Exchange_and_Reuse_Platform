@@ -1,6 +1,7 @@
 package com.college.resourceexchange.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "students")
@@ -26,11 +27,21 @@ public class Student {
     private String department;
     @Column(nullable = false)
     private String collegeIdCard;
+    @Column(updatable = false)
+    private LocalDateTime registeredAt;
 
     @Enumerated(EnumType.STRING)
     private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
 
     public Student() {
+    }
+    @PrePersist
+    protected void onCreate() {
+        registeredAt = LocalDateTime.now();
+    }
+
+    public LocalDateTime getRegisteredAt() {
+        return registeredAt;
     }
 
     public Long getStudentId() {

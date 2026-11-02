@@ -10,6 +10,4 @@ public class ResourceexchangeApplication {
 
 		SpringApplication.run(ResourceexchangeApplication.class, args);
 	}
-
-
 }

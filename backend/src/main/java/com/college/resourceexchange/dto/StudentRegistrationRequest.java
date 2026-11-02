@@ -6,7 +6,7 @@ public class StudentRegistrationRequest {
 
     private String firstName;
     private String lastName;
-    private String usn;
+    private String loginId;
     private String collegeEmail;
     private String phoneNumber;
     private String department;
@@ -30,12 +30,12 @@ public class StudentRegistrationRequest {
         this.lastName = lastName;
     }
 
-    public String getUsn() {
-        return usn;
+    public String getLoginId() {
+        return loginId;
     }
 
-    public void setUsn(String usn) {
-        this.usn = usn;
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
     public String getCollegeEmail() {

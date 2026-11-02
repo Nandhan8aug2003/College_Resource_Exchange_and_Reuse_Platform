@@ -8,56 +8,147 @@ function AdminPage() {
     const [selectedStatus, setSelectedStatus] = useState("PENDING");
     const [search, setSearch] = useState("");
     const [selectedStudent, setSelectedStudent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
     const navigate = useNavigate();
 
-    // Fetch pending students
+    // Convert Base64 image into a browser-readable image URL
+    function getIdCardImage(image) {
+        if (!image) return "";
+
+        // Remove whitespace from Base64 data
+        const cleanImage = image.replace(/\s/g, "");
+
+        // If image already contains a data URL, use it directly
+        if (cleanImage.startsWith("data:image/")) {
+            return cleanImage;
+        }
+
+        // Detect image type from Base64 signature
+        let imageType = "image/jpeg";
+
+        if (cleanImage.startsWith("iVBOR")) {
+            imageType = "image/png";
+        } else if (cleanImage.startsWith("R0lGOD")) {
+            imageType = "image/gif";
+        }
+
+        return `data:${imageType};base64,${cleanImage}`;
+    }
+
+    // Fetch pending students from backend
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/students/admin/pending`)
-            .then(response => {
+        async function fetchStudents() {
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/students/admin/status/PENDING`
+                );
+
                 if (!response.ok) {
-                    throw new Error("Failed to fetch students");
+                    throw new Error("Could not fetch students.");
                 }
-                return response.json();
-            })
-            .then(data => setStudents(data))
-            .catch(error => console.error(error));
+
+                const data = await response.json();
+
+                setStudents(
+                    data.map(student => ({
+                        ...student,
+                        status: "PENDING"
+                    }))
+                );
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchStudents();
     }, []);
 
     // Search students
     const filteredStudents = students.filter(student => {
         const fullName =
-            `${student.firstName} ${student.lastName}`.toLowerCase();
+            `${student.firstName || ""} ${student.lastName || ""}`.toLowerCase();
 
         const searchValue = search.toLowerCase();
 
-        return (
+        const matchesSearch =
             fullName.includes(searchValue) ||
-            student.usn.toLowerCase().includes(searchValue) ||
-            student.collegeEmail.toLowerCase().includes(searchValue)
-        );
+            (student.usn || "").toLowerCase().includes(searchValue) ||
+            (student.collegeEmail || "").toLowerCase().includes(searchValue);
+
+        const matchesStatus =
+            selectedStatus === "DASHBOARD" ||
+            selectedStatus === "ALL" ||
+            student.status === selectedStatus;
+
+        return matchesSearch && matchesStatus;
     });
 
-    const handleLogout = () => {
+    // Approve student locally until backend API is ready
+    function handleApprove(student) {
+        setStudents(previousStudents =>
+            previousStudents.map(item =>
+                item.studentId === student.studentId
+                    ? { ...item, status: "APPROVED" }
+                    : item
+            )
+        );
+
+        setSelectedStudent(null);
+    }
+
+    // Reject student locally until backend API is ready
+    function handleReject(student) {
+        setStudents(previousStudents =>
+            previousStudents.map(item =>
+                item.studentId === student.studentId
+                    ? { ...item, status: "REJECTED" }
+                    : item
+            )
+        );
+
+        setSelectedStudent(null);
+    }
+
+    function handleLogout() {
         navigate("/login");
+    }
+
+    const counts = {
+        ALL: students.length,
+        PENDING: students.filter(student => student.status === "PENDING").length,
+        APPROVED: students.filter(student => student.status === "APPROVED").length,
+        REJECTED: students.filter(student => student.status === "REJECTED").length
     };
 
-    // Sidebar options
     const menuItems = [
-        { label: "Dashboard", value: "DASHBOARD", icon: "▦", count: null },
-        { label: "Total Registered", value: "ALL", icon: "♙", count: 0 },
-        { label: "Pending", value: "PENDING", icon: "◷", count: students.length },
-        { label: "Approved", value: "APPROVED", icon: "✓", count: 0 },
-        { label: "Rejected", value: "REJECTED", icon: "⊗", count: 0 }
+        { label: "Total Registered", value: "ALL", },
+        { label: "Pending", value: "PENDING", },
+        { label: "Approved", value: "APPROVED",},
+        { label: "Rejected", value: "REJECTED",}
     ];
 
-    // Current table title
-    const getTableTitle = () => {
+    function getSectionTitle() {
         if (selectedStatus === "ALL") return "All Registered Students";
         if (selectedStatus === "PENDING") return "Pending Students";
         if (selectedStatus === "APPROVED") return "Approved Students";
         if (selectedStatus === "REJECTED") return "Rejected Students";
-        return "Student Registrations";
-    };
+
+        return "Students";
+    }
+
+    function getInitials(student) {
+        return `${student.firstName?.[0] || ""}${student.lastName?.[0] || ""}`;
+    }
+
+    function formatDate(date) {
+        return date
+            ? new Date(date).toLocaleDateString("en-GB")
+            : "—";
+    }
 
     return (
         <div className="admin-layout">
@@ -76,20 +167,18 @@ function AdminPage() {
                     {menuItems.map(item => (
                         <button
                             key={item.value}
-                            className={`sidebar-item ${
-                                selectedStatus === item.value ? "active" : ""
-                            }`}
+                            className={`sidebar-item ${selectedStatus === item.value ? "active" : ""
+                                }`}
                             onClick={() => setSelectedStatus(item.value)}
                         >
-                            {/* <span className="sidebar-icon">{item.icon}</span> */}
-
+                            <span className="sidebar-icon">{item.icon}</span>
                             {item.label}
 
-                            {item.count !== null && (
+                            {item.value !== "DASHBOARD" && (
                                 <small>
-                                    {item.value === "PENDING"
-                                        ? students.length
-                                        : item.count}
+                                    {item.value === "ALL"
+                                        ? counts.ALL
+                                        : counts[item.value]}
                                 </small>
                             )}
                         </button>
@@ -106,7 +195,6 @@ function AdminPage() {
             {/* MAIN CONTENT */}
             <main className="admin-main">
 
-                {/* HEADER */}
                 <header className="admin-header">
                     <div>
                         <h1>Admin Dashboard</h1>
@@ -124,119 +212,113 @@ function AdminPage() {
                     />
                 </header>
 
-                {/* TABLE SECTION */}
+                {/* STUDENT SECTION */}
                 <section className="student-section">
 
-                    <div className="table-heading">
-                        <h2>{getTableTitle()}</h2>
+                    <div className="section-heading">
+                        <div>
+                            <h2>{getSectionTitle()}</h2>
+                            <p>
+                                {filteredStudents.length} student
+                                {filteredStudents.length !== 1 ? "s" : ""}
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="student-table-container">
-                        <table className="student-table">
+                    {loading ? (
+                        <div className="student-empty">
+                            Loading students...
+                        </div>
+                    ) : error ? (
+                        <div className="student-empty error-message">
+                            {error}
+                        </div>
+                    ) : filteredStudents.length === 0 ? (
+                        <div className="student-empty">
+                            No students found in this category.
+                        </div>
+                    ) : (
+                        <div className="student-card-grid">
 
-                            <thead>
-                                <tr>
-                                    <th>STUDENT</th>
-                                    <th>USN</th>
-                                    <th>DEPARTMENT</th>
-                                    <th>REGISTERED</th>
-                                    <th>STATUS</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
+                            {filteredStudents.map(student => (
+                                <article
+                                    className="student-card"
+                                    key={student.studentId}
+                                >
 
-                            <tbody>
-                                {selectedStatus === "PENDING" &&
-                                filteredStudents.length > 0 ? (
+                                    <div className="student-card-top">
+                                        <div className="student-avatar">
+                                            {getInitials(student)}
+                                        </div>
 
-                                    filteredStudents.map(student => (
-                                        <tr key={student.studentId}>
+                                        <span
+                                            className={`status-badge ${student.status.toLowerCase()}`}
+                                        >
+                                            {student.status}
+                                        </span>
+                                    </div>
 
-                                            <td>
-                                                <div className="table-student">
-                                                    <div className="student-avatar">
-                                                        {student.firstName[0]}
-                                                        {student.lastName[0]}
-                                                    </div>
+                                    <div className="student-card-info">
+                                        <h3>
+                                            {student.firstName} {student.lastName}
+                                        </h3>
 
-                                                    <div>
-                                                        <strong>
-                                                            {student.firstName}{" "}
-                                                            {student.lastName}
-                                                        </strong>
+                                        <p>{student.collegeEmail}</p>
+                                    </div>
 
-                                                        <span>
-                                                            {student.collegeEmail}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </td>
+                                    <div className="student-card-details">
+                                        <div>
+                                            <span>USN</span>
+                                            <strong>{student.loginId}</strong>
+                                        </div>
 
-                                            <td>{student.usn}</td>
+                                        <div>
+                                            <span>Department</span>
+                                            <strong>{student.department}</strong>
+                                        </div>
 
-                                            <td>{student.department}</td>
+                                        <div>
+                                            <span>Registered</span>
+                                            <strong>
+                                                {formatDate(student.createdAt)}
+                                            </strong>
+                                        </div>
+                                    </div>
 
-                                            <td>
-                                                {student.createdAt
-                                                    ? new Date(student.createdAt)
-                                                        .toLocaleDateString("en-GB")
-                                                    : "—"}
-                                            </td>
+                                    <div className="student-card-actions">
 
-                                            <td>
-                                                <span className="status-badge pending">
-                                                    Pending
-                                                </span>
-                                            </td>
+                                        <button
+                                            className="view-button"
+                                            onClick={() => setSelectedStudent(student)}
+                                        >
+                                            View Details
+                                        </button>
 
-                                            <td>
-                                                <div className="table-actions">
+                                        {student.status === "PENDING" && (
+                                            <>
+                                                <button
+                                                    className="approve-button"
+                                                    onClick={() => handleApprove(student)}
+                                                >
+                                                    Approve
+                                                </button>
 
-                                                    <button
-                                                        className="view-button"
-                                                        onClick={() =>
-                                                            setSelectedStudent(student)
-                                                        }
-                                                    >
-                                                        <span>◎</span>
-                                                        View
-                                                    </button>
+                                                <button
+                                                    className="reject-button"
+                                                    onClick={() => handleReject(student)}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </>
+                                        )}
 
-                                                    <button
-                                                        className="approve-button"
-                                                        disabled
-                                                        title="Approval functionality will be added later"
-                                                    >
-                                                        Approve
-                                                    </button>
+                                    </div>
 
-                                                    <button
-                                                        className="reject-button"
-                                                        disabled
-                                                        title="Rejection functionality will be added later"
-                                                    >
-                                                        Reject
-                                                    </button>
+                                </article>
+                            ))}
 
-                                                </div>
-                                            </td>
-
-                                        </tr>
-                                    ))
-
-                                ) : (
-
-                                    <tr>
-                                        <td colSpan="6" className="empty-table">
-                                            No students found in this category.
-                                        </td>
-                                    </tr>
-
-                                )}
-                            </tbody>
-
-                        </table>
-                    </div>
+                        </div>
+                    )}
 
                 </section>
 
@@ -266,8 +348,10 @@ function AdminPage() {
                                 {selectedStudent.lastName}
                             </h2>
 
-                            <span className="status-badge pending">
-                                Pending
+                            <span
+                                className={`status-badge ${selectedStudent.status.toLowerCase()}`}
+                            >
+                                {selectedStudent.status}
                             </span>
                         </div>
 
@@ -276,8 +360,18 @@ function AdminPage() {
                             <div className="modal-details">
 
                                 <div>
+                                    <label>First Name</label>
+                                    <p>{selectedStudent.firstName}</p>
+                                </div>
+
+                                <div>
+                                    <label>Last Name</label>
+                                    <p>{selectedStudent.lastName}</p>
+                                </div>
+
+                                <div>
                                     <label>USN</label>
-                                    <p>{selectedStudent.usn}</p>
+                                    <p>{selectedStudent.loginId}</p>
                                 </div>
 
                                 <div>
@@ -286,7 +380,7 @@ function AdminPage() {
                                 </div>
 
                                 <div>
-                                    <label>Phone</label>
+                                    <label>Phone Number</label>
                                     <p>{selectedStudent.phoneNumber}</p>
                                 </div>
 
@@ -296,43 +390,46 @@ function AdminPage() {
                                 </div>
 
                                 <div>
-                                    <label>Registered</label>
-                                    <p>
-                                        {selectedStudent.createdAt
-                                            ? new Date(selectedStudent.createdAt)
-                                                .toLocaleDateString("en-GB")
-                                            : "—"}
-                                    </p>
+                                    <label>Registered Date</label>
+                                    <p>{formatDate(selectedStudent.createdAt)}</p>
                                 </div>
 
                             </div>
 
+                            {/* COLLEGE ID CARD */}
                             <div className="modal-id-card">
-                                <label>College ID Card</label>
-
-                                <img
-                                    src={`${API_BASE_URL}/api/students/admin/${selectedStudent.studentId}/id-card`}
-                                    alt="College ID Card"
-                                />
+                                
+                                {selectedStudent.idCardimage ? (
+                                    <img
+                                        src={`data:image/jpeg;base64,${selectedStudent.idCardimage}`}
+                                        alt="College ID Card"
+                                    />
+                                ) : (
+                                    <p>ID card image is unavailable.</p>
+                                )}
                             </div>
 
                         </div>
 
-                        <div className="modal-actions">
-                            <button
-                                className="reject-button"
-                                disabled
-                            >
-                                Reject
-                            </button>
+                        {selectedStudent.status === "PENDING" && (
+                            <div className="modal-actions">
 
-                            <button
-                                className="approve-button"
-                                disabled
-                            >
-                                Approve
-                            </button>
-                        </div>
+                                <button
+                                    className="reject-button"
+                                    onClick={() => handleReject(selectedStudent)}
+                                >
+                                    Reject Student
+                                </button>
+
+                                <button
+                                    className="approve-button"
+                                    onClick={() => handleApprove(selectedStudent)}
+                                >
+                                    Approve Student
+                                </button>
+
+                            </div>
+                        )}
 
                     </div>
                 </div>

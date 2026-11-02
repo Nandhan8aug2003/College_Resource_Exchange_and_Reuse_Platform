@@ -13,25 +13,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
-import com.college.resourceexchange.dto.PendingStudentResponse;
+import com.college.resourceexchange.dto.StudentResponse;
 import com.college.resourceexchange.entity.RegistrationStatus;
 import java.util.List;
 
 @Service
-public class StudentService{
+public class StudentService {
 
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, UserRepository userRepository){
+    StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
+    //id card storing in the backend server folder
     private String saveIdCard(MultipartFile file) throws IOException {
         Path uploadDirectory = Paths.get("uploads").toAbsolutePath().normalize();
 
@@ -47,22 +49,23 @@ public class StudentService{
         return filePath.toString();
     }
 
+    //check student already present throw usn
     public boolean isUsnRegistered(String usn) {
         return userRepository.existsByLoginId(usn);
     }
 
+    //check student already present throw collegeEmail
     public boolean isCollegeEmailRegistered(String collegeEmail) {
         return studentRepository.existsByCollegeEmail(collegeEmail);
     }
 
-    //multiple database operations treated as one transaction all or nothing,
-    //Atomicity
+    //multiple data operations in single method student register in user and student table
     @Transactional
     public String registerStudent(StudentRegistrationRequest request) {
 
         System.out.println(passwordEncoder.encode("admin123"));
 
-        if (request.getUsn() == null || request.getUsn().isBlank()
+        if (request.getLoginId() == null || request.getLoginId().isBlank()
                 || request.getCollegeEmail() == null
                 || request.getCollegeEmail().isBlank()
                 || request.getPassword() == null
@@ -72,7 +75,7 @@ public class StudentService{
             return "Required fields are missing";
         }
 
-        if (isUsnRegistered(request.getUsn())) {
+        if (isUsnRegistered(request.getLoginId())) {
             return "USN already registered";
         }
 
@@ -84,7 +87,7 @@ public class StudentService{
             String idCardPath = saveIdCard(request.getCollegeIdCard());
 
             User user = new User();
-            user.setLoginId(request.getUsn());
+            user.setLoginId(request.getLoginId());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setRole(RoleType.STUDENT);
             Student student = new Student();
@@ -99,31 +102,44 @@ public class StudentService{
             student.setUser(savedUser);
             studentRepository.save(student);
 
-            return "Registration successful";
+            return "Registration successful...";
 
         } catch (IOException e) {
             return "Failed to save college ID card";
         }
     }
 
-    public List<PendingStudentResponse> getPendingStudents() {
-        return studentRepository
-                .findByRegistrationStatus(RegistrationStatus.PENDING)
-                .stream()
-                .map(student -> {
-                    PendingStudentResponse response =
-                            new PendingStudentResponse();
+    private byte[] readIdCard(String imagePath) throws IOException {
+        return Files.readAllBytes(Paths.get(imagePath));
+    }
 
-                    response.setStudentId(student.getStudentId());
+    // Find students based on registration status
+    public List<StudentResponse> getStudentsByStatus(RegistrationStatus status) {
+
+        List<Student> students =
+                studentRepository.findByRegistrationStatus(status);
+
+        List<StudentResponse> responses = students.stream()
+                .map(student -> {
+                    StudentResponse response = new StudentResponse();
+
                     response.setFirstName(student.getFirstName());
                     response.setLastName(student.getLastName());
+                    response.setLoginId(student.getUser().getLoginId());
                     response.setCollegeEmail(student.getCollegeEmail());
                     response.setPhoneNumber(student.getPhoneNumber());
                     response.setDepartment(student.getDepartment());
+                    response.setRegisteredAt(student.getRegisteredAt());
 
+                    try {
+                        response.setIdCardimage(readIdCard(student.getCollegeIdCard()));
+                    } catch (IOException e) {
+                        throw new RuntimeException("Unable to read ID card", e);
+                    }
                     return response;
                 })
                 .toList();
-    }
 
+        return responses;
+    }
 }
