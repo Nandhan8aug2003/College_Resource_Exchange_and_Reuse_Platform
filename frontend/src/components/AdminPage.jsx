@@ -65,7 +65,7 @@ function AdminPage() {
         }
 
         fetchStudents();
-    }, []);
+    },[]);
 
     // Search students
     const filteredStudents = students.filter(student => {
@@ -91,7 +91,7 @@ function AdminPage() {
     function handleApprove(student) {
         setStudents(previousStudents =>
             previousStudents.map(item =>
-                item.studentId === student.studentId
+                item.loginId === student.loginId
                     ? { ...item, status: "APPROVED" }
                     : item
             )
@@ -104,7 +104,7 @@ function AdminPage() {
     function handleReject(student) {
         setStudents(previousStudents =>
             previousStudents.map(item =>
-                item.studentId === student.studentId
+                item.loginId === student.loginId
                     ? { ...item, status: "REJECTED" }
                     : item
             )
@@ -127,8 +127,8 @@ function AdminPage() {
     const menuItems = [
         { label: "Total Registered", value: "ALL", },
         { label: "Pending", value: "PENDING", },
-        { label: "Approved", value: "APPROVED",},
-        { label: "Rejected", value: "REJECTED",}
+        { label: "Approved", value: "APPROVED", },
+        { label: "Rejected", value: "REJECTED", }
     ];
 
     function getSectionTitle() {
@@ -280,7 +280,7 @@ function AdminPage() {
                                         <div>
                                             <span>Registered</span>
                                             <strong>
-                                                {formatDate(student.createdAt)}
+                                                {student.registeredAt}
                                             </strong>
                                         </div>
                                     </div>
@@ -391,14 +391,14 @@ function AdminPage() {
 
                                 <div>
                                     <label>Registered Date</label>
-                                    <p>{formatDate(selectedStudent.createdAt)}</p>
+                                    <p>{selectedStudent.registeredAt}</p>
                                 </div>
 
                             </div>
 
                             {/* COLLEGE ID CARD */}
                             <div className="modal-id-card">
-                                
+
                                 {selectedStudent.idCardimage ? (
                                     <img
                                         src={`data:image/jpeg;base64,${selectedStudent.idCardimage}`}

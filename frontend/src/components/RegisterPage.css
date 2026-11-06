@@ -125,10 +125,30 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
 }
 
+.register-card .brand-name {
+    font-size: 35px;
+    font-weight: 700;
+    color: #102033;
+    margin: 0 0 30px;
+}
+
+.register-card .brand-name span {
+    font-size: 35px;
+    color: #0873e8;
+    margin-right: 8px;
+}
+
+
 .register-card h2 {
     font-size: 30px;
     color: #101e30;
     margin: 0 0 8px;
+}
+
+.register-card h2 span {
+    color: #0873e8;
+    font-size: 14px;
+    margin: 0 0 18px;
 }
 
 .register-subtitle {
@@ -328,5 +348,31 @@
 
     .register-illustration {
         height: 220px;
+    }
+
+    .register-card .brand-name {
+        font-size: 24px;
+    }
+
+    .register-card .brand-name span {
+        font-size: 24px;
+    }
+
+    .register-card h2 span {
+        color: #0873e8;
+        font-size: 14px;
+        margin: 0 0 18px;
+    }
+
+    .register-subtitle {
+        color: #0873e8;
+        font-size: 14px;
+        margin: 0 0 18px;
+    }
+
+    .register-card h2 {
+        font-size: 28px;
+        color: #101e30;
+        margin: 0 0 8px;
     }
 }

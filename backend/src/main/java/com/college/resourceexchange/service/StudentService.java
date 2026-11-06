@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 import com.college.resourceexchange.dto.StudentResponse;
@@ -39,6 +38,7 @@ public class StudentService {
 
         Files.createDirectories(uploadDirectory);
 
+        //creates random password uuid
         String fileName = UUID.randomUUID() + "_" +
                 Path.of(file.getOriginalFilename()).getFileName();
 
@@ -62,8 +62,6 @@ public class StudentService {
     //multiple data operations in single method student register in user and student table
     @Transactional
     public String registerStudent(StudentRegistrationRequest request) {
-
-        System.out.println(passwordEncoder.encode("admin123"));
 
         if (request.getLoginId() == null || request.getLoginId().isBlank()
                 || request.getCollegeEmail() == null
@@ -139,7 +137,6 @@ public class StudentService {
                     return response;
                 })
                 .toList();
-
         return responses;
     }
 }

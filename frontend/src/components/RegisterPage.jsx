@@ -70,7 +70,7 @@ function RegisterPage() {
 
             {/* Left Section */}
             <div className="register-left">
-                
+
                 <h1>
                     Share what you have.
                     <br />
@@ -97,6 +97,9 @@ function RegisterPage() {
 
                 <div className="register-card">
 
+                    <h2 className="brand-name">
+                        <span>♻</span> REUSEHUB
+                    </h2>
                     <h2>Student Registration</h2>
 
                     <p className="register-subtitle">

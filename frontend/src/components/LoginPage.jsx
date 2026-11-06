@@ -79,11 +79,9 @@ function LoginPage() {
                 </h2>
                    <h2>Welcome back!
                     <br />
-                    <span>Please enter your credentials to access your account.</span>
+                    <span className="message-display">Please enter your credentials to access your account.</span>
                    </h2>
-
                    
-
                     <form onSubmit={handleSubmit}>
 
                         <label>Login id</label>
